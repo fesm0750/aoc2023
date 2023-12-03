@@ -1,15 +1,19 @@
-//! Day 01
+//! Day 01: Trebuchet?!
 //!
-//! Link of the challenge: https://adventofcode.com/2023/day/1
+//! Link to the challenge: https://adventofcode.com/2023/day/1
 //!
 //! # Problem:
 //!
-//! From an input file containing lines of ascii text ("calibration data"):
+//! From an input file containing lines of ascii text (referred to as "calibration data"):
 //!
-//! 1. Find the first and last digit of each line ("calibration digits"), combine them together to form a two digit
-//!    number ("calibration value") and then sum them all;
+//! 1. Find the first and last digit of each line ("calibration digits"), combine them together to form a two-digit
+//!    number ("calibration value"), and then calculate the sum of all these values;
 //!
-//! 2. Same task as before, but now digits can also be spelled out with letters.
+//! 2. Same task as before, but now digits can also be spelled with letters.
+//!
+//! # Solution
+//!
+//! - Search from both left and right.
 
 use std::fs;
 use std::str;
@@ -24,15 +28,15 @@ pub fn run() {
     println!("Part 02: Total Calibration value: {}", b);
 }
 
-/// returns the total sum of calibration values
-/// @param s: string containing the calibration data
-/// @param calibration: function that reads the input data and returns the calibration digits
+/// Returns the total sum of calibration values.
+/// @param s: String containing the calibration data.
+/// @param calibration: Function that reads the input data and returns the calibration digits.
 fn total_calibration_value(s: &str, calibration: fn(&str) -> (u32, u32)) -> u32 {
     s.lines().map(calibration).map(|(first, last)| first * 10 + last).sum()
 }
 
-/// returns the calibration digits from an input line according to part 1 rules
-/// @param line: a string containing a single line of text (no '\n')
+/// Returns the calibration digits from an input line according to part 1 rules.
+/// @param line: A string containing a single line of text (without '\n').
 fn calibration_digits_pt01(line: &str) -> (u32, u32) {
     let mut digits = line.chars().filter_map(|c| c.to_digit(10));
     // lines have at least one digit,
@@ -42,10 +46,10 @@ fn calibration_digits_pt01(line: &str) -> (u32, u32) {
     (first, last)
 }
 
-/// returns the calibration digits from an input line according to part 2 rules
-/// @param line: a string containing a single line of text (no '\n')
+/// Returns the calibration digits from an input line according to part 2 rules.
+/// @param line: A string containing a single line of text (without '\n');
 fn calibration_digits_pt02<'a>(line: &str) -> (u32, u32) {
-    // closure to parse digits and spelled values into numbers
+    // closure to filter digits (single numeric values and spelled values)
     let digit_filter = |s: &str| -> Option<u32> {
         match s {
             _ if s.as_bytes()[0].is_ascii_digit() => Some((s.as_bytes()[0] - b'0') as u32),

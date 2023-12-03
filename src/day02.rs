@@ -1,19 +1,24 @@
-//! Day 02
+//! Day 02: Cube Conundrum
 //!
-//! Link of the challenge: https://adventofcode.com/2023/day/2
+//! Link to the challenge: https://adventofcode.com/2023/day/2
 //!
 //! # Problem:
 //!
-//! A game consist of 3 sets of cubes of different colors (Red, Green and Blue), for each round we must keep track of
-//! the maximum amount of cubes from each color that have been showed.
-//! - A game is valid if the maximum amount of cubes is below a limit for that color.
-//! - The "power" of a game is given by the multiplication of the maximum amount of cubes registered for each color.
+//! A game consist of 3 sets of cubes of different colors (Red, Green and Blue). For each round, we must keep track of
+//! the maximum number of cubes of each color that have been recorded.
+//! - A game is considered valid if the maximum number of cubes is below a limit for that color.
+//! - The "power" of a game is determined by the multiplication of the maximum number of cubes registered for each
+//!   color.
 //!
-//! From an input file containing lines of ascii text representing records of games.
+//! From an input file containing lines of ascii text representing records of games:
 //!
-//! 1. Find the sum of valid game ids;
+//! 1. Find the sum of valid game IDs;
 //!
 //! 2. Find the sum of "powers" of all recorded games.
+//!
+//! # Solution
+//!
+//! - Keeping track of maximum values.
 
 use std::{error, fs, str::FromStr};
 use Color::*;
@@ -31,10 +36,8 @@ pub fn run() {
 fn parse_input(input: &str) -> Option<Vec<Game>> {
     let mut games: Vec<Game> = Vec::new();
 
+    // Example line: "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green"
     for line in input.lines() {
-        // Example line: "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green"
-        // Structure: Game {id}: records{[n Color], [n Color]; [n Color]}
-
         // Get Game id
         let mut iter = line.split(": ");
         let id: u32 = iter.next()?.split_ascii_whitespace().nth(1)?.parse().unwrap();
@@ -55,14 +58,14 @@ fn parse_input(input: &str) -> Option<Vec<Game>> {
     Some(games)
 }
 
-/// returns the sum of `id`s of valid games.
-/// @param `games`: a reference to an array of `Game`s
+/// Returns the sum of `id`s of valid games.
+/// @param `games`: a reference to an array of `Game`s.
 fn sum_valid(games: &[Game]) -> u32 {
     games.iter().filter(|g| g.is_valid()).map(|g| g.id).sum()
 }
 
-/// returns the sum of "powers" of games.
-/// @param `games`: a reference to an array of `Game`s
+/// Returns the sum of "powers" of games.
+/// @param `games`: a reference to an array of `Game`s.
 fn sum_powers(games: &[Game]) -> u32 {
     games.iter().map(|g| g.power()).sum()
 }
@@ -79,14 +82,14 @@ enum Color {
     Blue,
 }
 
-// Intermediary struct to parse a game record, it stores the color and amount of cubes.
+/// Intermediary struct to parse a game record, storing the color and number of cubes.
 #[derive(Copy, Clone)]
 struct Cube {
     color: Color,
     quantity: u32,
 }
 
-/// Stores a game id and the max amount of each kind of cube showed.
+/// Stores a game `id` and the maximum amount of each kind of cube recorded.
 struct Game {
     id: u32,
     max_red: u32,
@@ -99,14 +102,16 @@ struct Game {
 //----------
 
 impl Game {
-    //---
-    // Limits for each color
-    //---
+    //----------
+    // Color limits
+    //
+    // Limits defined for each color.
+    //----------
     const LIMIT_RED: u32 = 12;
     const LIMIT_GREEN: u32 = 13;
     const LIMIT_BLUE: u32 = 14;
 
-    /// Initialises a new struct given the id.
+    /// Initializes a new struct with the given id.
     fn new(id: u32) -> Game {
         Game {
             id,
@@ -116,8 +121,8 @@ impl Game {
         }
     }
 
-    /// Updates the game from a cube record
-    /// @param `cube`: a cube struct.
+    /// Compares a `Cube` quantity to the stored number, updating `self` if greater.
+    /// @param `cube`: a `Cube`.
     fn update(&mut self, cube: Cube) {
         match cube.color {
             Red => {
@@ -138,13 +143,13 @@ impl Game {
         }
     }
 
-    /// Returns a boolean indicating if the game is valid.
-    /// A game is valid if the maximum amount of each color is below the limit.
+    /// Returns a boolean indicating whether the game is valid.
+    /// A game is considered valid if the maximum number of cubes for each color is within the color's limit.
     fn is_valid(&self) -> bool {
         self.max_red <= Game::LIMIT_RED && self.max_green <= Game::LIMIT_GREEN && self.max_blue <= Game::LIMIT_BLUE
     }
 
-    /// Returns the power of the game.
+    /// Returns the "power" of the game.
     fn power(&self) -> u32 {
         self.max_red * self.max_green * self.max_blue
     }
@@ -159,6 +164,8 @@ impl Game {
 impl FromStr for Color {
     type Err = String;
 
+    /// Parses a cube color.
+    /// @param `s`: Only acceptable values are "red", "green" and "blue".
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "red" => Ok(Red),
@@ -172,6 +179,9 @@ impl FromStr for Color {
 impl FromStr for Cube {
     type Err = Box<dyn error::Error>;
 
+    /// Parses a cube record.
+    /// @param `s`: String format expected: "{number} {color}", for example: "3 blue". Number must be a positive
+    /// integer, and color must be one of the acceptable variants of the enum `Color`.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut iter = s.split_ascii_whitespace();
 
