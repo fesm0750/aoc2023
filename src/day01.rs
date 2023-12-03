@@ -1,5 +1,7 @@
 //! Day 01
 //!
+//! Link of the challenge: https://adventofcode.com/2023/day/1
+//!
 //! # Problem:
 //!
 //! From an input file containing lines of ascii text ("calibration data"):
@@ -8,8 +10,6 @@
 //!    number ("calibration value") and then sum them all;
 //!
 //! 2. Same task as before, but now digits can also be spelled out with letters.
-//!
-//! Link of the challenge: https://adventofcode.com/2023/day/1
 
 use std::fs;
 use std::str;
