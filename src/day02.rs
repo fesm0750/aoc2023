@@ -39,8 +39,8 @@ fn parse_input(input: &str) -> Option<Vec<Game>> {
     // Example line: "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green"
     for line in input.lines() {
         // Get Game id
-        let mut iter = line.split(": ");
-        let id: u32 = iter.next()?.split_ascii_whitespace().nth(1)?.parse().unwrap();
+        let mut iter = line.strip_prefix("Game ")?.split(": ");
+        let id: u32 = iter.next()?.parse().unwrap();
 
         // create game struct
         let mut game = Game::new(id);
@@ -125,21 +125,9 @@ impl Game {
     /// @param `cube`: a `Cube`.
     fn update(&mut self, cube: Cube) {
         match cube.color {
-            Red => {
-                if cube.quantity > self.max_red {
-                    self.max_red = cube.quantity
-                }
-            }
-            Green => {
-                if cube.quantity > self.max_green {
-                    self.max_green = cube.quantity
-                }
-            }
-            Blue => {
-                if cube.quantity > self.max_blue {
-                    self.max_blue = cube.quantity
-                }
-            }
+            Red => self.max_red = self.max_red.max(cube.quantity),
+            Green => self.max_green = self.max_green.max(cube.quantity),
+            Blue => self.max_blue = self.max_blue.max(cube.quantity),
         }
     }
 
