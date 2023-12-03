@@ -11,6 +11,7 @@ fn main() {
     match input.unwrap().parse().unwrap() {
         1 => day01::run(),
         2 => day02::run(),
+        3 => day03::run(),
         _ => println!("Invalid input argument."),
     }
 }
