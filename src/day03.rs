@@ -217,10 +217,11 @@ impl Gear {
 impl Number {
     /// Checks if a given position is adjacent to a number on the grid.
     fn is_adjacent(&self, symbol: Position) -> bool {
-        self.row.abs_diff(symbol.row) <= 1  // same row or one above or one below
-            && symbol.col <= (self.end + 1) // must be smaller than end or one after end
-            && (symbol.col >= self.start || self.start.abs_diff(symbol.col) == 1) // must be greater than start or one
-                                                                                  // before start
+        // avoids the use of subtraction, cuz it may cause overflow on edge cases
+        self.row.abs_diff(symbol.row) <= 1  // same row, one above or one below
+            && symbol.col <= (self.end + 1) // must be at most the position immediately after end
+            && (symbol.col >= self.start || self.start.abs_diff(symbol.col) == 1) // must be at least the position
+                                                                                  // immediately before start
     }
 }
 
