@@ -48,7 +48,7 @@ fn calibration_digits_pt01(line: &str) -> (u32, u32) {
 
 /// Returns the calibration digits from an input line according to part 2 rules.
 /// @param line: A string containing a single line of text (without '\n');
-fn calibration_digits_pt02<'a>(line: &str) -> (u32, u32) {
+fn calibration_digits_pt02(line: &str) -> (u32, u32) {
     // closure to filter digits (single numeric values and spelled values)
     let digit_filter = |s: &str| -> Option<u32> {
         match s {

@@ -75,7 +75,7 @@ fn find_part_numbers(expanded_grid: &str, n_cols: usize) -> Vec<Number> {
         for (col, char) in line.as_bytes().iter().enumerate() {
             // push digits into accumulation buffer
             if char.is_ascii_digit() && col < n_cols {
-                if number_acc.len() == 0 {
+                if number_acc.is_empty() {
                     start = col;
                 }
                 number_acc.push(*char);
@@ -83,7 +83,7 @@ fn find_part_numbers(expanded_grid: &str, n_cols: usize) -> Vec<Number> {
             }
 
             // if numeric sequence ends, resolve number and save position
-            if number_acc.len() > 0 && (!char.is_ascii_digit() || col == n_cols - 1) {
+            if !number_acc.is_empty() && (!char.is_ascii_digit() || col == n_cols - 1) {
                 // converts a sequence of characters into a number
                 let n: u32 = (0..number_acc.len()).fold(0, |acc, i| acc * 10 + (number_acc[i] - b'0') as u32);
 
@@ -244,7 +244,7 @@ mod tests {
 ...$.*....
 .664.598..";
 
-        let (grid, _, n_cols) = expand_borders(&input, '.');
+        let (grid, _, n_cols) = expand_borders(input, '.');
         let part_numbers = find_part_numbers(&grid, n_cols);
 
         // Part 01
