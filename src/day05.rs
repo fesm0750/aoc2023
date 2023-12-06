@@ -1,3 +1,4 @@
+use rayon::prelude::*;
 use std::{cmp::Ordering, error, fs, str::FromStr, time::Instant};
 
 type AlmanacMap = Vec<Entry>;
@@ -16,7 +17,7 @@ pub fn run() {
 
     // part 2
     let now = Instant::now();
-    let location_pt2 = process_lowest_location_pt2(&seeds, &almanac);
+    let location_pt2 = process_lowest_location_pt2_mt(&seeds, &almanac);
     let elapsed = now.elapsed();
     println!("Elapsed: {:.2?}", elapsed);
     println!("Part 2: Lowest Location number: {}", location_pt2);
@@ -84,6 +85,7 @@ fn process_lowest_location(seeds: &[u64], almanac: &Almanac) -> u64 {
     location
 }
 
+#[allow(dead_code)]
 fn process_lowest_location_pt2(seeds: &[u64], almanac: &Almanac) -> u64 {
     let seeds = seeds.chunks(2).flat_map(|a| (a[0]..).take(a[1] as usize));
     // position is given by the last map
@@ -113,6 +115,41 @@ fn process_lowest_location_pt2(seeds: &[u64], almanac: &Almanac) -> u64 {
     }
 
     location
+}
+
+fn process_lowest_location_pt2_mt(seeds: &[u64], almanac: &Almanac) -> u64 {
+    let seeds = seeds.par_chunks(2).flat_map(|a| (a[0]..a[0] + a[1])); // .take(a[1] as usize)
+
+    seeds
+        .map(|seed| {
+            almanac
+                .iter()
+                .scan(seed, |val, map| {
+                    let v = *val;
+                    let idx = map.binary_search_by(|e| {
+                        if e.start > v {
+                            Ordering::Greater
+                        } else if e.start <= v && v <= e.end {
+                            Ordering::Equal
+                        } else {
+                            Ordering::Less
+                        }
+                    });
+
+                    *val = if let Ok(idx) = idx {
+                        let diff = v - map[idx].start;
+                        map[idx].destination_start + diff
+                    } else {
+                        v
+                    };
+
+                    Some(*val)
+                })
+                .last()
+                .unwrap()
+        })
+        .min()
+        .unwrap()
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -209,5 +246,9 @@ humidity-to-location map:
         // part 2
         let location2 = process_lowest_location_pt2(&seeds, &almanac);
         assert_eq!(location2, 46);
+
+        // part 2 multithread
+        let location2mt = process_lowest_location_pt2_mt(&seeds, &almanac);
+        assert_eq!(location2mt, 46);
     }
 }
