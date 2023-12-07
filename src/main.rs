@@ -15,6 +15,7 @@ fn main() {
         4 => day04::run(),
         5 => day05::run(),
         6 => day06::run(),
+        7 => day07::run(),
         _ => println!("Invalid input argument."),
     }
 }
